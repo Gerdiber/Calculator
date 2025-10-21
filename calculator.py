@@ -25,3 +25,27 @@ def calc(expr):
     except:
         # 出现异常返回None
         return None
+
+
+def format_num(value):
+    """格式化数字"""
+    # 处理浮点数
+    if isinstance(value, float):
+        value = fractions.Fraction(value).limit_denominator()
+    # 整数直接返回
+    if isinstance(value, int):
+        return str(value)
+    # 处理分数
+    if isinstance(value, fractions.Fraction):
+        # 为0返回'0'
+        if value.numerator == 0:
+            return "0"
+        # 分子小于分母(值小于1)
+        if value.numerator < value.denominator:
+            return f"{value.numerator}/{value.denominator}"
+        # 分子大于等于分母(值大于1)--化作带分数
+        w = value.numerator // value.denominator  # 计算整数
+        r = value.numerator % value.denominator  # 计算剩余的分子
+        return str(w) if r == 0 else f"{w}'{r}/{value.denominator}"
+
+    return str(value)
