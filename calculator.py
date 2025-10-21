@@ -173,3 +173,45 @@ def check_answers(ex_file, ans_file):
             wrong.append(i)  # 将题目编号加入错误数组中
 
     return right, wrong
+
+
+def main():
+    parser = argparse.ArgumentParser(description='四则运算题目生成器')
+    parser.add_argument('-n', type=int, help='题目数量')
+    parser.add_argument('-r', type=int, help='数字范围')
+    parser.add_argument('-e', type=str, help='题目文件')
+    parser.add_argument('-a', type=str, help='答案文件')
+
+    args = parser.parse_args()
+
+    if args.e and args.a:
+        # 批改模式
+        right, wrong = check_answers(args.e, args.a)
+        with open('Grade.txt', 'w', encoding='utf-8') as f:
+            f.write(f"Correct: {len(right)} ({', '.join(map(str, right))})\n")
+            f.write(f"Wrong: {len(wrong)} ({', '.join(map(str, wrong))})\n")
+        print("批改完成！")
+
+    elif args.r and args.n:
+        # 生成模式
+        problems, answers = make_problem(args.r, args.n)
+
+        with open('Exercises.txt', 'w', encoding='utf-8') as f:
+            for i, p in enumerate(problems):
+                f.write(f"{i+1}. {p}\n")
+
+        with open('Answers.txt', 'w', encoding='utf-8') as f:
+            for i, a in enumerate(answers):
+                f.write(f"{i+1}. {a}\n")
+
+        print(f"生成 {args.n} 道题目完成！")
+
+    else:
+        # 异常则提示
+        print("用法:")
+        print("  生成: python calculator.py -n 数量 -r 范围")
+        print("  批改: python calculator.py -e 题目文件 -a 答案文件")
+
+
+if __name__ == "__main__":
+    main()
