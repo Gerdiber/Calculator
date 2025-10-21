@@ -16,10 +16,23 @@ def make_num(max_num):
     return str(random.randint(0, max_num - 1))
 
 
+def convert_mixed_fraction(expr):
+    # 正则表达式匹配 a'b/c 格式
+    pattern = r"(\d+)'(\d+)/(\d+)"
+    # 替换函数
+    def replacement(match):
+        a = match.group(1) # 整数部分
+        b = match.group(2) # 分子
+        c = match.group(3) # 分母
+        return f"({a}+{b}/{c})"
+    # 执行替换
+    return re.sub(pattern, replacement, expr)
+
+
 def calc(expr):
     """计算表达式"""
     # 将表达式格式化,部分运算符替换为算法识别的运算符
-    expr = expr.replace('×', '*').replace('÷', '/').replace('−','-')
+    expr = convert_mixed_fraction(expr.replace('×', '*').replace('÷', '/').replace('−','-'))
     try:
         return eval(expr, {"__builtins__": None}, {"fractions": fractions.Fraction})
     except:
@@ -86,6 +99,15 @@ def check_expr(root):
     return True and LC and RC # 左右子树与当前树均合法
 
 
+def deleteTree(root):
+    """递归删除树"""
+    if root is None:
+        return None
+    root.left=deleteTree(root.left) # 删除左子树
+    root.right=deleteTree(root.right) # 删除右子树
+    del root # 删除该节点
+    return None
+
 def make_expr_str(root):
     """生成表达式的字符串"""
     advance={ # 运算符优先级定义
@@ -145,11 +167,13 @@ def make_problem(max_num, count):
             continue
         # 生成字符串并生成答案
         expr = make_expr_str(root)
+        deleteTree(root)
         answer = calc(expr)
         problems.append(f"{expr} = ")
         answers.append(format_num(answer))
 
     return problems, answers
+
 
 def check_answers(ex_file, ans_file):
     """批改答案"""
