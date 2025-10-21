@@ -150,3 +150,26 @@ def make_problem(max_num, count):
         answers.append(format_num(answer))
 
     return problems, answers
+
+def check_answers(ex_file, ans_file):
+    """批改答案"""
+    pattern = r'^\d+\.\s*'
+    with open(ex_file, 'r', encoding='utf-8') as f:
+        ex_list = [line.strip() for line in f]  # 题目列表
+
+    with open(ans_file, 'r', encoding='utf-8') as f:
+        ans_list = [line.strip() for line in f]  # 答案列表
+
+    right = []  # 正确数组
+    wrong = []  # 错误数组
+
+    for i, (ex, ans) in enumerate(zip(ex_list, ans_list), 1):
+        expr = re.sub(pattern,'', ex.replace('=', ''))
+        ans = re.sub(pattern,'', ans)
+        correct_ans = format_num(calc(expr))  # 计算正确答案
+        if ans == correct_ans:  # 正确
+            right.append(i)  # 将题目编号加入正确数组中
+        else:  # 错误
+            wrong.append(i)  # 将题目编号加入错误数组中
+
+    return right, wrong
