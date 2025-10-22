@@ -4,6 +4,9 @@ import fractions  # 用于运算表达式结果
 import re # 用于正则表达式去除题号
 
 
+ops = ['+', '−', '×', '÷']  # 运算符数组
+
+
 def make_num(max_num):
     """生成数字：自然数或分数"""
     if random.random() < 0.3:  # 30%概率生成分数
@@ -78,7 +81,7 @@ def check_expr(root):
         return True
     LC = check_expr(root.left) # 左子树检查结果
     RC = check_expr(root.right) # 右子树检查结果
-    if root.value in ['+', '−', '×', '÷']: # 节点为运算符
+    if root.value in ops: # 节点为运算符
         temp_str = f"{root.left.result}{root.value}{root.right.result}"
         temp_result = calc(temp_str) #计算当前子表达式
         if temp_result == None: # 有错误则重新生成
@@ -116,13 +119,13 @@ def make_expr_str(root):
         '×': 2,
         '÷': 2
     }
-    if root.left.value in ['+', '−', '×', '÷']:
+    if root.left.value in ops:
         left_str = f"{root.left.left.value} {root.left.value} {root.left.right.value}"
         if advance[root.left.value] < advance[root.value]:
             left_str = f"({left_str})"
     else:
         left_str = root.left.value
-    if root.right.value in ['+', '−', '×', '÷']:
+    if root.right.value in ops:
         if root.value == '−' and root.right.value == '−':
             root.right.value = '+'
         right_str = f"{root.right.left.value} {root.right.value} {root.right.right.value}"
@@ -138,7 +141,7 @@ def make_problem(max_num, count):
     problems = []  # 题目数组
     answers = []  # 答案数组
     seen = set()  # 合法题目集合
-    ops = ['+', '−', '×', '÷']  # 待选用运算符
+
 
     while len(problems) < count:
         # 决定运算符数量
@@ -165,9 +168,14 @@ def make_problem(max_num, count):
         # 检查表达式合法性
         if check_expr(root) is False:
             continue
-        # 生成字符串并生成答案
+        # 生成字符串并比对是否有重复
         expr = make_expr_str(root)
         deleteTree(root)
+        simple_expr=expr.replace(' ','')
+        if simple_expr in seen:
+            continue
+        seen.add(simple_expr)
+        # 生成答案
         answer = calc(expr)
         problems.append(f"{expr} = ")
         answers.append(format_num(answer))
