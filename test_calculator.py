@@ -1,7 +1,9 @@
 import unittest
+from unittest.mock import patch
 import os
 import tempfile
 import fractions
+import calculator
 from calculator import make_num, calc, format_num, check_expr, exprNode, make_problem, check_answers
 
 
@@ -156,6 +158,29 @@ class TestCalculator(unittest.TestCase):
         # 所有答案应该都是正确的
         self.assertEqual(len(wrong), 0)
         self.assertEqual(len(right), 10)
+
+
+class TestCommandLine(unittest.TestCase):
+
+    @patch('sys.argv', ['calculator.py', '-n', '10', '-r', '10'])
+    def test_generate_mode(self):
+        # 测试生成模式
+        # 由于main函数会使用sys.argv，我们通过patch模拟命令行参数
+        # 这里我们检查是否成功解析了参数，并且进入了生成模式
+        args = calculator.parser.parse_args()
+        self.assertEqual(args.n, 10)
+        self.assertEqual(args.r, 10)
+        self.assertIsNone(args.e)
+        self.assertIsNone(args.a)
+
+    @patch('sys.argv', ['calculator.py', '-e', 'exercises.txt', '-a', 'answers.txt'])
+    def test_grade_mode(self):
+        # 测试批改模式
+        args = calculator.parser.parse_args()
+        self.assertIsNone(args.n)
+        self.assertIsNone(args.r)
+        self.assertEqual(args.e, 'exercises.txt')
+        self.assertEqual(args.a, 'answers.txt')
 
 
 if __name__ == '__main__':

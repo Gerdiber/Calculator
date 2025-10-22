@@ -207,12 +207,13 @@ def check_answers(ex_file, ans_file):
     return right, wrong
 
 
+parser = argparse.ArgumentParser(description='四则运算题目生成器')
+parser.add_argument('-n', type=int, help='题目数量')
+parser.add_argument('-r', type=int, help='数字范围')
+parser.add_argument('-e', type=str, help='题目文件')
+parser.add_argument('-a', type=str, help='答案文件')
+
 def main():
-    parser = argparse.ArgumentParser(description='四则运算题目生成器')
-    parser.add_argument('-n', type=int, help='题目数量')
-    parser.add_argument('-r', type=int, help='数字范围')
-    parser.add_argument('-e', type=str, help='题目文件')
-    parser.add_argument('-a', type=str, help='答案文件')
 
     args = parser.parse_args()
 
